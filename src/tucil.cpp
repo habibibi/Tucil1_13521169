@@ -63,6 +63,7 @@ int main(){
                 fail = true;
             }
         }
+        if (inpCnt != 4) fail = true;
         if (!fail) break;
         cout << "Input salah, mohon masukkan ulang!\n";
     }
