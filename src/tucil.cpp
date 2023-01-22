@@ -1,6 +1,8 @@
 #include <iostream>
 #include <set>
+#include <random>
 #include <chrono>
+#include <time.h>
 using namespace std;
 using namespace std::chrono;
 
@@ -20,56 +22,84 @@ bool isEqual(double a, double b){
 
 
 int main(){
+    srand(time(0));
+    char input;
     int arr[4];
-    while (true){
-        string s;
-        getline(cin,s);
-        int inpCnt = 0;
-        bool fail = false;
-        int i = 0;
-        while (i < s.length() && !fail){
-            string kartu = "";
-            while (i < s.length() && s[i] == ' ') i++;
-            while (i < s.length() && s[i] != ' '){
-                kartu += s[i];
-                i++;
-            }
-            if (inpCnt == 4){
-                if (kartu.length() != 0) fail = true;
-                else break;
-            } else if (kartu == "10"){
-                arr[inpCnt] = 10;
-                inpCnt++;
-            } else if (kartu.length() == 1){
-                if (kartu[0] >= '2' && kartu[0] <= '9'){
-                    arr[inpCnt] = kartu[0]-'0';
+    cout << "Pilih metode input\n";
+    cout << "1. Generate kartu secara random\n";
+    cout << "2. Input melalui terminal\n";
+    do {
+        cout << "Pilihan anda : ";
+        cin >> input;
+        if (input != '1' && input != '2'){
+            cout << "Mohon masukkan pilihan yang sesuai.\n";
+        }
+    } while (input != '1' && input != '2');
+    if (input == '1'){
+        cout << "Kartu anda :\n";
+        for (int i = 0;i < 4;i++){
+            if (i != 0) cout << " ";
+            arr[i] = rand() % 13+1;
+            if (arr[i] == 1) cout << "A";
+            else if (arr[i] == 11) cout << "J";
+            else if (arr[i] == 12) cout << "Q";
+            else if (arr[i] == 13) cout << "K";
+            else cout << arr[i]; 
+        }
+        cout << endl;
+    } else {
+        cout << "Masukkan nilai empat kartu yang valid (A,2,3,4,5,6,7,8,9,10,J,Q,K) dengan dipisahkan spasi :\n";
+        char tmp;
+        getchar(); //flush newline char from cin stream
+        while (true){
+            string s;
+            getline(cin,s);
+            int inpCnt = 0;
+            bool fail = false;
+            int i = 0;
+            while (i < s.length() && !fail){
+                string kartu = "";
+                while (i < s.length() && s[i] == ' ') i++;
+                while (i < s.length() && s[i] != ' '){
+                    kartu += s[i];
+                    i++;
+                }
+                if (inpCnt == 4){
+                    if (kartu.length() != 0) fail = true;
+                    else break;
+                } else if (kartu == "10"){
+                    arr[inpCnt] = 10;
                     inpCnt++;
-                } else if (kartu[0] == 'A'){
-                    arr[inpCnt] = 1;
-                    inpCnt++;
-                } else if (kartu[0] == 'J'){
-                    arr[inpCnt] = 11;
-                    inpCnt++;
-                } else if (kartu[0] == 'Q'){
-                    arr[inpCnt] = 12;
-                    inpCnt++;
-                } else if (kartu[0] == 'K'){
-                    arr[inpCnt] = 13;
-                    inpCnt++;
+                } else if (kartu.length() == 1){
+                    if (kartu[0] >= '2' && kartu[0] <= '9'){
+                        arr[inpCnt] = kartu[0]-'0';
+                        inpCnt++;
+                    } else if (kartu[0] == 'A'){
+                        arr[inpCnt] = 1;
+                        inpCnt++;
+                    } else if (kartu[0] == 'J'){
+                        arr[inpCnt] = 11;
+                        inpCnt++;
+                    } else if (kartu[0] == 'Q'){
+                        arr[inpCnt] = 12;
+                        inpCnt++;
+                    } else if (kartu[0] == 'K'){
+                        arr[inpCnt] = 13;
+                        inpCnt++;
+                    } else {
+                        fail = true;
+                    }
                 } else {
                     fail = true;
                 }
-            } else {
-                fail = true;
             }
+            if (inpCnt != 4) fail = true;
+            if (!fail) break;
+            cout << "Input tidak valid, mohon input ulang!\n";
         }
-        if (inpCnt != 4) fail = true;
-        if (!fail) break;
-        cout << "Input salah, mohon masukkan ulang!\n";
     }
-
-    set<string> ans;
     auto start = high_resolution_clock::now();
+    set<string> ans;
     int cnt = 0;
     for (int i = 0;i < 4;i++){
         for (int j = 0;j < 4;j++){
@@ -99,7 +129,6 @@ int main(){
                                     string tmp = string("(")+ to_string(arr[i]) + " " + opchar[op[0]] + " " + to_string(arr[j]) + ") " + opchar[op[1]] + " (" + to_string(arr[k]) + " " + opchar[op[2]] + " " + to_string(arr[l]) + ")";
                                     ans.insert(tmp);
                                 }
-                                
                             }
                         }
                     }
@@ -109,11 +138,10 @@ int main(){
     }
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    
+    cout << ans.size() << " solutions found!\n";
     for (auto i : ans){
         cout << i << endl;
     }
-    cout << ans.size() << " solutions found!\n";
-    cout << "Runtime: " << duration.count() << " microseconds\n";
+    cout << "Runtime : " << duration.count() << " microseconds\n";
     
 }
