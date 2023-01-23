@@ -3,6 +3,7 @@
 #include <random>
 #include <chrono>
 #include <time.h>
+#include <fstream>
 using namespace std;
 using namespace std::chrono;
 
@@ -17,36 +18,50 @@ double f(double res, int op, double operand){
 }
 
 bool isEqual(double a, double b){
-    return abs(a-b) <=0.00000001;
+    return abs(a-b) <= 0.00000001;
 }
 
+void printKartu(int kartu[4], ostream &outstream){
+    for (int i = 0;i < 4;i++){
+        if (i != 0) outstream << " ";
+        if (kartu[i] == 1) outstream << "A";
+        else if (kartu[i] == 11) outstream << "J";
+        else if (kartu[i] == 12) outstream << "Q";
+        else if (kartu[i] == 13) outstream << "K";
+        else outstream << kartu[i]; 
+    }
+    outstream << endl;
+}
+
+void printSolusi(set<string> ans, ostream &outstream) {
+    if (ans.empty()){
+        outstream << "No solutions found!\n";
+    } else {
+        outstream << ans.size() << " solutions found!\n";
+        for (auto solusi : ans){
+            outstream << solusi << endl;
+        }
+    }
+}
 
 int main(){
     srand(time(0));
-    char input;
-    int arr[4];
-    cout << "Pilih metode input\n";
+    string input;
+    int kartu[4];
+    cout << "Pilih metode memilih kartu :\n";
     cout << "1. Generate kartu secara random\n";
     cout << "2. Input melalui terminal\n";
     do {
         cout << "Pilihan anda : ";
         cin >> input;
-        if (input != '1' && input != '2'){
+        if (input != "1" && input != "2"){
             cout << "Mohon masukkan pilihan yang sesuai.\n";
         }
-    } while (input != '1' && input != '2');
-    if (input == '1'){
+    } while (input != "1" && input != "2");
+    if (input == "1"){
         cout << "Kartu anda :\n";
-        for (int i = 0;i < 4;i++){
-            if (i != 0) cout << " ";
-            arr[i] = rand() % 13+1;
-            if (arr[i] == 1) cout << "A";
-            else if (arr[i] == 11) cout << "J";
-            else if (arr[i] == 12) cout << "Q";
-            else if (arr[i] == 13) cout << "K";
-            else cout << arr[i]; 
-        }
-        cout << endl;
+        for (int i = 0;i < 4;i++) kartu[i] = rand() % 13+1;
+        printKartu(kartu,cout);
     } else {
         cout << "Masukkan nilai empat kartu yang valid (A,2,3,4,5,6,7,8,9,10,J,Q,K) dengan dipisahkan spasi :\n";
         char tmp;
@@ -58,33 +73,33 @@ int main(){
             bool fail = false;
             int i = 0;
             while (i < s.length() && !fail){
-                string kartu = "";
+                string word = "";
                 while (i < s.length() && s[i] == ' ') i++;
                 while (i < s.length() && s[i] != ' '){
-                    kartu += s[i];
+                    word += s[i];
                     i++;
                 }
                 if (inpCnt == 4){
-                    if (kartu.length() != 0) fail = true;
+                    if (word.length() != 0) fail = true;
                     else break;
-                } else if (kartu == "10"){
-                    arr[inpCnt] = 10;
+                } else if (word == "10"){
+                    kartu[inpCnt] = 10;
                     inpCnt++;
-                } else if (kartu.length() == 1){
-                    if (kartu[0] >= '2' && kartu[0] <= '9'){
-                        arr[inpCnt] = kartu[0]-'0';
+                } else if (word.length() == 1){
+                    if (word[0] >= '2' && word[0] <= '9'){
+                        kartu[inpCnt] = kartu[0]-'0';
                         inpCnt++;
-                    } else if (kartu[0] == 'A'){
-                        arr[inpCnt] = 1;
+                    } else if (word[0] == 'A'){
+                        kartu[inpCnt] = 1;
                         inpCnt++;
-                    } else if (kartu[0] == 'J'){
-                        arr[inpCnt] = 11;
+                    } else if (word[0] == 'J'){
+                        kartu[inpCnt] = 11;
                         inpCnt++;
-                    } else if (kartu[0] == 'Q'){
-                        arr[inpCnt] = 12;
+                    } else if (word[0] == 'Q'){
+                        kartu[inpCnt] = 12;
                         inpCnt++;
-                    } else if (kartu[0] == 'K'){
-                        arr[inpCnt] = 13;
+                    } else if (word[0] == 'K'){
+                        kartu[inpCnt] = 13;
                         inpCnt++;
                     } else {
                         fail = true;
@@ -95,7 +110,7 @@ int main(){
             }
             if (inpCnt != 4) fail = true;
             if (!fail) break;
-            cout << "Input tidak valid, mohon input ulang!\n";
+            cout << "Input tidak valid! Mohon masukkan ulang.\n";
         }
     }
     auto start = high_resolution_clock::now();
@@ -113,20 +128,20 @@ int main(){
                     for (op[0] = 0;op[0] < 4;op[0]++){
                         for (op[1] = 0;op[1] < 4;op[1]++){
                             for (op[2] = 0;op[2] < 4;op[2]++){
-                                if (isEqual(f(f(f(arr[i],op[0],arr[j]) ,op[1],arr[k]) ,op[2],arr[l]),24)){
-                                    string tmp = string("((")+ to_string(arr[i]) + " " + opchar[op[0]] + " " + to_string(arr[j]) + ") " + opchar[op[1]] + " " + to_string(arr[k]) + ") " + opchar[op[2]] + " " + to_string(arr[l]);
+                                if (isEqual(f(f(f(kartu[i],op[0],kartu[j]) ,op[1],kartu[k]) ,op[2],kartu[l]),24)){
+                                    string tmp = string("((")+ to_string(kartu[i]) + " " + opchar[op[0]] + " " + to_string(kartu[j]) + ") " + opchar[op[1]] + " " + to_string(kartu[k]) + ") " + opchar[op[2]] + " " + to_string(kartu[l]);
                                     ans.insert(tmp);
-                                } if (isEqual(f(f(arr[i],op[0],f(arr[j],op[1],arr[k]) ) ,op[2],arr[l]),24)){
-                                    string tmp = string("(")+ to_string(arr[i]) + " " + opchar[op[0]] + " (" + to_string(arr[j]) + " " + opchar[op[1]] + " " + to_string(arr[k]) + ")) " + opchar[op[2]] + " " + to_string(arr[l]);
+                                } if (isEqual(f(f(kartu[i],op[0],f(kartu[j],op[1],kartu[k]) ) ,op[2],kartu[l]),24)){
+                                    string tmp = string("(")+ to_string(kartu[i]) + " " + opchar[op[0]] + " (" + to_string(kartu[j]) + " " + opchar[op[1]] + " " + to_string(kartu[k]) + ")) " + opchar[op[2]] + " " + to_string(kartu[l]);
                                     ans.insert(tmp);
-                                } if (isEqual(f(arr[i],op[0],f(f(arr[j],op[1],arr[k]) ,op[2],arr[l]) ),24)){
-                                    string tmp = string("")+ to_string(arr[i]) + " " + opchar[op[0]] + " ((" + to_string(arr[j]) + " " + opchar[op[1]] + " " + to_string(arr[k]) + ") " + opchar[op[2]] + " " + to_string(arr[l]) + ")";
+                                } if (isEqual(f(kartu[i],op[0],f(f(kartu[j],op[1],kartu[k]) ,op[2],kartu[l]) ),24)){
+                                    string tmp = string("")+ to_string(kartu[i]) + " " + opchar[op[0]] + " ((" + to_string(kartu[j]) + " " + opchar[op[1]] + " " + to_string(kartu[k]) + ") " + opchar[op[2]] + " " + to_string(kartu[l]) + ")";
                                     ans.insert(tmp);
-                                } if (isEqual(f(arr[i],op[0],f(arr[j],op[1],f(arr[k],op[2],arr[l]))),24)){
-                                    string tmp = string("")+ to_string(arr[i]) + " " + opchar[op[0]] + " (" + to_string(arr[j]) + " " + opchar[op[1]] + " (" + to_string(arr[k]) + " " + opchar[op[2]] + " " + to_string(arr[l]) + "))";
+                                } if (isEqual(f(kartu[i],op[0],f(kartu[j],op[1],f(kartu[k],op[2],kartu[l]))),24)){
+                                    string tmp = string("")+ to_string(kartu[i]) + " " + opchar[op[0]] + " (" + to_string(kartu[j]) + " " + opchar[op[1]] + " (" + to_string(kartu[k]) + " " + opchar[op[2]] + " " + to_string(kartu[l]) + "))";
                                     ans.insert(tmp);
-                                } if (isEqual(f(f(arr[i],op[0],arr[j]),op[1],f(arr[k],op[2],arr[l])),24)){
-                                    string tmp = string("(")+ to_string(arr[i]) + " " + opchar[op[0]] + " " + to_string(arr[j]) + ") " + opchar[op[1]] + " (" + to_string(arr[k]) + " " + opchar[op[2]] + " " + to_string(arr[l]) + ")";
+                                } if (isEqual(f(f(kartu[i],op[0],kartu[j]),op[1],f(kartu[k],op[2],kartu[l])),24)){
+                                    string tmp = string("(")+ to_string(kartu[i]) + " " + opchar[op[0]] + " " + to_string(kartu[j]) + ") " + opchar[op[1]] + " (" + to_string(kartu[k]) + " " + opchar[op[2]] + " " + to_string(kartu[l]) + ")";
                                     ans.insert(tmp);
                                 }
                             }
@@ -138,10 +153,24 @@ int main(){
     }
     auto stop = high_resolution_clock::now();
     auto duration = duration_cast<microseconds>(stop - start);
-    cout << ans.size() << " solutions found!\n";
-    for (auto i : ans){
-        cout << i << endl;
-    }
+    printSolusi(ans,cout);
     cout << "Runtime : " << duration.count() << " microseconds\n";
-    
+    do {
+        cout << "Apakah Anda ingin mencetak solusi pada sebuah file (y/n)? ";
+        cin >> input;
+        if (input != "y" &&  input != "n"){
+            cout << "Input tidak valid! Mohon masukkan ulang.\n";
+        }
+    } while (input != "y" &&  input != "n");
+    if (input == "y"){
+        cout << "Masukkan nama file beserta ekstensi : ";
+        string filename;
+        cin >> filename;
+        ofstream file;
+        file.open("..\\test\\"+filename);
+        printKartu(kartu,file);
+        printSolusi(ans,file);
+        file.close();
+        cout << "Solusi berhasil dicetak pada test\\" + filename + "!\n";
+    }
 }
