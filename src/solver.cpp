@@ -48,6 +48,15 @@ int main(){
     srand(time(0));
     string input;
     int kartu[4];
+cout << "================================================================================================\n"
+     << " ::::::::   :::                   ::::::::   ::::::::  :::    :::     ::: :::::::::: :::::::::  \n"
+     << ":+:    :+: :+:                   :+:    :+: :+:    :+: :+:    :+:     :+: :+:        :+:    :+: \n"
+     << "      +:+ +:+ +:+                +:+        +:+    +:+ +:+    +:+     +:+ +:+        +:+    +:+ \n"
+     << "    +#+  +#+  +:+  +#++:++#++:++ +#++:++#++ +#+    +:+ +#+    +#+     +:+ +#++:++#   +#++:++#:  \n"
+     << "  +#+   +#+#+#+#+#+                     +#+ +#+    +#+ +#+     +#+   +#+  +#+        +#+    +#+ \n"
+     << " #+#          #+#                #+#    #+# #+#    #+# #+#      #+#+#+#   #+#        #+#    #+# \n"
+     << "##########    ###                 ########   ########  ########## ###     ########## ###    ### \n"
+     << "================================================================================================\n";
     cout << "Pilih metode memilih kartu :\n";
     cout << "1. Generate kartu secara random\n";
     cout << "2. Input melalui terminal\n";
@@ -59,7 +68,7 @@ int main(){
         }
     } while (input != "1" && input != "2");
     if (input == "1"){
-        cout << "Kartu anda :\n";
+        cout << "Kartu Anda :\n";
         for (int i = 0;i < 4;i++) kartu[i] = rand() % 13+1;
         printKartu(kartu,cout);
     } else {
@@ -163,10 +172,10 @@ int main(){
         }
     } while (input != "y" &&  input != "n");
     if (input == "y"){
-        cout << "Masukkan nama file beserta ekstensi : ";
         string filename;
-        cin >> filename;
         ofstream file;
+        cout << "Masukkan nama file beserta ekstensi : ";
+        cin >> filename;
         file.open("..\\test\\"+filename);
         printKartu(kartu,file);
         printSolusi(ans,file);
