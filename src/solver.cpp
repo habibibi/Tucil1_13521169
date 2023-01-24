@@ -9,19 +9,22 @@ using namespace std::chrono;
 
 const char opchar[4] = {'+','-','*','/'};
 
-double f(double res, int op, double operand){
-    if (op == 0) return res += operand;
-    if (op == 1) return res -= operand;
-    if (op == 2) return res *= operand;
-    if (op == 3) return res /=operand;
-    return res;
+double f(double operand1, int op, double operand2){
+    // menghitung nilai a op b
+    if (op == 0) return operand1 += operand2;
+    if (op == 1) return operand1 -= operand2;
+    if (op == 2) return operand1 *= operand2;
+    if (op == 3) return operand1 /= operand2;
+    return operand1;
 }
 
 bool isEqual(double a, double b){
+    // Mengecek apakah bilangan riil a dan b sama
     return abs(a-b) <= 0.00000001;
 }
 
 void printKartu(int kartu[4], ostream &outstream){
+    // Mencetak kartu pada output stream tertentu
     for (int i = 0;i < 4;i++){
         if (i != 0) outstream << " ";
         if (kartu[i] == 1) outstream << "A";
@@ -34,12 +37,15 @@ void printKartu(int kartu[4], ostream &outstream){
 }
 
 void printSolusi(set<string> ans, ostream &outstream) {
+    // Mencetak solusi pada output stream tertentu
     if (ans.empty()){
         outstream << "No solutions found!\n";
     } else {
         outstream << ans.size() << " solutions found!\n";
+        int i = 1;
         for (auto solusi : ans){
-            outstream << solusi << endl;
+            outstream << i << ". " << solusi << endl;
+            i++;
         }
     }
 }
@@ -48,15 +54,7 @@ int main(){
     srand(time(0));
     string input;
     int kartu[4];
-cout << "================================================================================================\n"
-     << " ::::::::   :::                   ::::::::   ::::::::  :::    :::     ::: :::::::::: :::::::::  \n"
-     << ":+:    :+: :+:                   :+:    :+: :+:    :+: :+:    :+:     :+: :+:        :+:    :+: \n"
-     << "      +:+ +:+ +:+                +:+        +:+    +:+ +:+    +:+     +:+ +:+        +:+    +:+ \n"
-     << "    +#+  +#+  +:+  +#++:++#++:++ +#++:++#++ +#+    +:+ +#+    +#+     +:+ +#++:++#   +#++:++#:  \n"
-     << "  +#+   +#+#+#+#+#+                     +#+ +#+    +#+ +#+     +#+   +#+  +#+        +#+    +#+ \n"
-     << " #+#          #+#                #+#    #+# #+#    #+# #+#      #+#+#+#   #+#        #+#    #+# \n"
-     << "##########    ###                 ########   ########  ########## ###     ########## ###    ### \n"
-     << "================================================================================================\n";
+    cout << "***** 24-SOLVER *****\n";
     cout << "Pilih metode memilih kartu :\n";
     cout << "1. Generate kartu secara random\n";
     cout << "2. Input melalui terminal\n";
@@ -68,11 +66,14 @@ cout << "=======================================================================
         }
     } while (input != "1" && input != "2");
     if (input == "1"){
+        // input secara random
         cout << "Kartu Anda :\n";
         for (int i = 0;i < 4;i++) kartu[i] = rand() % 13+1;
         printKartu(kartu,cout);
     } else {
-        cout << "Masukkan nilai empat kartu yang valid (A,2,3,4,5,6,7,8,9,10,J,Q,K) dengan dipisahkan spasi :\n";
+        // input oleh pengguna
+        cout << "Masukkan nilai empat kartu yang valid\n";
+        cout << "(A,2,3,4,5,6,7,8,9,10,J,Q,K) dengan dipisahkan spasi :\n";
         char tmp;
         getchar(); //flush newline char from cin stream
         while (true){
@@ -96,7 +97,7 @@ cout << "=======================================================================
                     inpCnt++;
                 } else if (word.length() == 1){
                     if (word[0] >= '2' && word[0] <= '9'){
-                        kartu[inpCnt] = kartu[0]-'0';
+                        kartu[inpCnt] = word[0]-'0';
                         inpCnt++;
                     } else if (word[0] == 'A'){
                         kartu[inpCnt] = 1;
@@ -124,33 +125,55 @@ cout << "=======================================================================
     }
     auto start = high_resolution_clock::now();
     set<string> ans;
-    int cnt = 0;
-    for (int i = 0;i < 4;i++){
-        for (int j = 0;j < 4;j++){
-            if (j == i) continue;
-            for (int k = 0;k < 4;k++){
-                if (k == i || k == j) continue;
-                for (int l = 0;l < 4;l++){
-                    if (l == i || l == j || l == k) continue;
-                    cnt++;
+    for (int a = 0;a < 4;a++){
+        for (int b = 0;b < 4;b++){
+            if (b == a) continue;
+            for (int c = 0;c < 4;c++){
+                if (c == a || c == b) continue;
+                for (int d = 0;d < 4;d++){
+                    if (d == a || d == b || d == c) continue;
                     int op[3];
                     for (op[0] = 0;op[0] < 4;op[0]++){
                         for (op[1] = 0;op[1] < 4;op[1]++){
                             for (op[2] = 0;op[2] < 4;op[2]++){
-                                if (isEqual(f(f(f(kartu[i],op[0],kartu[j]) ,op[1],kartu[k]) ,op[2],kartu[l]),24)){
-                                    string tmp = string("((")+ to_string(kartu[i]) + " " + opchar[op[0]] + " " + to_string(kartu[j]) + ") " + opchar[op[1]] + " " + to_string(kartu[k]) + ") " + opchar[op[2]] + " " + to_string(kartu[l]);
+                                if (isEqual(f(f(f(kartu[a],op[0],kartu[b]) ,op[1],kartu[c]) ,op[2],kartu[d]),24)){
+                                    // Bentuk ((a op b) op c) op d
+                                    string tmp = "";
+                                    tmp = tmp + "((" + to_string(kartu[a]) + " " + opchar[op[0]] + " " + to_string(kartu[b]) + ") ";
+                                    tmp = tmp + opchar[op[1]] + " " + to_string(kartu[c]) + ") ";
+                                    tmp = tmp + opchar[op[2]] + " " + to_string(kartu[d]);
                                     ans.insert(tmp);
-                                } if (isEqual(f(f(kartu[i],op[0],f(kartu[j],op[1],kartu[k]) ) ,op[2],kartu[l]),24)){
-                                    string tmp = string("(")+ to_string(kartu[i]) + " " + opchar[op[0]] + " (" + to_string(kartu[j]) + " " + opchar[op[1]] + " " + to_string(kartu[k]) + ")) " + opchar[op[2]] + " " + to_string(kartu[l]);
+                                } 
+                                if (isEqual(f(f(kartu[a],op[0],f(kartu[b],op[1],kartu[c]) ) ,op[2],kartu[d]),24)){
+                                    // Bentuk (a op (b op c)) op d
+                                    string tmp = "";
+                                    tmp = tmp + "(" + to_string(kartu[a]) + " " + opchar[op[0]] + " ";
+                                    tmp = tmp + "(" + to_string(kartu[b]) + " " + opchar[op[1]] + " " + to_string(kartu[c]) + ")) ";
+                                    tmp = tmp + opchar[op[2]] + " " + to_string(kartu[d]);
                                     ans.insert(tmp);
-                                } if (isEqual(f(kartu[i],op[0],f(f(kartu[j],op[1],kartu[k]) ,op[2],kartu[l]) ),24)){
-                                    string tmp = string("")+ to_string(kartu[i]) + " " + opchar[op[0]] + " ((" + to_string(kartu[j]) + " " + opchar[op[1]] + " " + to_string(kartu[k]) + ") " + opchar[op[2]] + " " + to_string(kartu[l]) + ")";
+                                } 
+                                if (isEqual(f(kartu[a],op[0],f(f(kartu[b],op[1],kartu[c]) ,op[2],kartu[d]) ),24)){
+                                    // Bentuk a op ((b op c) op d)
+                                    string tmp = "";
+                                    tmp = tmp + to_string(kartu[a]) + " " + opchar[op[0]] + " ";
+                                    tmp = tmp + "((" + to_string(kartu[b]) + " " + opchar[op[1]] + " " + to_string(kartu[c]) + ") ";
+                                    tmp = tmp + opchar[op[2]] + " " + to_string(kartu[d]) + ")";
                                     ans.insert(tmp);
-                                } if (isEqual(f(kartu[i],op[0],f(kartu[j],op[1],f(kartu[k],op[2],kartu[l]))),24)){
-                                    string tmp = string("")+ to_string(kartu[i]) + " " + opchar[op[0]] + " (" + to_string(kartu[j]) + " " + opchar[op[1]] + " (" + to_string(kartu[k]) + " " + opchar[op[2]] + " " + to_string(kartu[l]) + "))";
+                                } 
+                                if (isEqual(f(kartu[a],op[0],f(kartu[b],op[1],f(kartu[c],op[2],kartu[d]))),24)){
+                                    // Bentuk a op (b op (c op d))
+                                    string tmp = "";
+                                    tmp = tmp + to_string(kartu[a]) + " " + opchar[op[0]] + " ";
+                                    tmp = tmp + "(" + to_string(kartu[b]) + " " + opchar[op[1]] + " ";
+                                    tmp = tmp + "(" + to_string(kartu[c]) + " " + opchar[op[2]] + " " + to_string(kartu[d]) + "))";
                                     ans.insert(tmp);
-                                } if (isEqual(f(f(kartu[i],op[0],kartu[j]),op[1],f(kartu[k],op[2],kartu[l])),24)){
-                                    string tmp = string("(")+ to_string(kartu[i]) + " " + opchar[op[0]] + " " + to_string(kartu[j]) + ") " + opchar[op[1]] + " (" + to_string(kartu[k]) + " " + opchar[op[2]] + " " + to_string(kartu[l]) + ")";
+                                } 
+                                if (isEqual(f(f(kartu[a],op[0],kartu[b]),op[1],f(kartu[c],op[2],kartu[d])),24)){
+                                    // Bentuk (a op b) op (c op d)
+                                	string tmp = "";
+                                    tmp = tmp + "(" + to_string(kartu[a]) + " " + opchar[op[0]] + " " + to_string(kartu[b]) + ") "; 
+                                    tmp = tmp + opchar[op[1]] + " ";
+                                    tmp = tmp + "(" + to_string(kartu[c]) + " " + opchar[op[2]] + " " + to_string(kartu[d]) + ")";
                                     ans.insert(tmp);
                                 }
                             }
